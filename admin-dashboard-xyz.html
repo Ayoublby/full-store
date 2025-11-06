@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - Full Store Admin</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/main-styles.css">
+    
+    <style>
+        /* Admin Panel Specific Styles */
+        .admin-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #5c7cfa, #748ffc);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .admin-header h1 {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-header p {
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: white;
+            border: 2px solid var(--bg-light);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .tab-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Product Form */
+        .product-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group label i {
+            color: var(--primary-color);
+        }
+
+        .form-control {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--bg-light);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(92, 124, 250, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Image Upload */
+        .image-upload-zone {
+            border: 3px dashed var(--bg-light);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-secondary);
+        }
+
+        .image-upload-zone:hover {
+            border-color: var(--primary-color);
+            background: rgba(92, 124, 250, 0.05);
+        }
+
+        .image-upload-zone i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .image-preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .image-preview {
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            aspect-ratio: 1;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-remove {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .image-preview-remove:hover {
+            transform: scale(1.1);
+        }
+
+        /* Products Table */
+        .products-table-container {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .products-table thead {
+            background: var(--bg-secondary);
+        }
+
+        .products-table th {
+            padding: 1rem;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--bg-light);
+        }
+
+        .products-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--bg-light);
+            vertical-align: middle;
+        }
+
+        .products-table tbody tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .product-image-cell {
+            width: 80px;
+        }
+
+        .product-image-cell img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .action-btn-edit {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .action-btn-delete {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Badge */
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .badge-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .badge-info {
+            background: var(--info-color);
+            color: white;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.primary {
+            background: rgba(92, 124, 250, 0.1);
+            color: var(--primary-color);
+        }
+
+        .stat-icon.success {
+            background: rgba(81, 207, 102, 0.1);
+            color: var(--success-color);
+        }
+
+        .stat-icon.warning {
+            background: rgba(255, 212, 59, 0.1);
+            color: var(--warning-color);
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .stat-info p {
+            margin: 0;
+            color: var(--text-muted);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-success {
+            background: rgba(81, 207, 102, 0.1);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .alert-error {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+
+        .alert-info {
+            background: rgba(51, 154, 240, 0.1);
+            color: var(--info-color);
+            border: 1px solid var(--info-color);
+        }
+
+        /* Checkbox & Radio */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Hide default file input */
+        #productImages {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .products-table {
+                font-size: 0.875rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-top-row">
+                    <div class="logo">
+                        <i class="fas fa-store"></i>
+                        <h1>Full Store Admin</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+            <a href="index.html" class="nav-btn">
+                <i class="fas fa-home"></i>
+                الصفحة الرئيسية
+            </a>
+            <a href="pages/products.html" class="nav-btn">
+                <i class="fas fa-box"></i>
+                صفحة المنتجات
+            </a>
+            <a href="pages/electronics.html" class="nav-btn">
+                <i class="fas fa-laptop"></i>
+                الإلكترونيات
+            </a>
+            <a href="pages/tools.html" class="nav-btn">
+                <i class="fas fa-tools"></i>
+                الأدوات
+            </a>
+            <a href="pages/clothes.html" class="nav-btn">
+                <i class="fas fa-tshirt"></i>
+                الملابس
+            </a>
+        </div>
+
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <h1>
+                <i class="fas fa-shield-alt"></i>
+                لوحة التحكم الإدارية
+            </h1>
+            <p>إدارة المنتجات والمتجر بسهولة - يحفظ في الملفات ويعمل مع GitHub</p>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <i class="fas fa-box"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalProducts">0</h3>
+                    <p>إجمالي المنتجات</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="inStockProducts">0</h3>
+                    <p>المنتجات المتوفرة</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="featuredProducts">0</h3>
+                    <p>المنتجات المميزة</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon danger">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalCategories">0</h3>
+                    <p>الفئات</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="add-product">
+                <i class="fas fa-plus-circle"></i>
+                إضافة منتج جديد
+            </button>
+            <button class="tab-btn" data-tab="manage-products">
+                <i class="fas fa-list"></i>
+                إدارة المنتجات
+            </button>
+        </div>
+
+        <!-- Tab Content: Add Product -->
+        <div class="tab-content active" id="add-product">
+            <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-plus-circle" style="color: var(--primary-color);"></i>
+                إضافة منتج جديد
+            </h2>
+
+            <form class="product-form" id="productForm">
+                <!-- Product Name -->
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-tag"></i>
+                        اسم المنتج
+                    </label>
+                    <input type="text" class="form-control" id="productName" required placeholder="أدخل اسم المنتج">
+                </div>
+
+                <!-- Product Description -->
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-align-right"></i>
+                        وصف المنتج
+                    </label>
+                    <textarea class="form-control" id="productDescription" required placeholder="أدخل وصف تفصيلي للمنتج"></textarea>
+                </div>
+
+                <!-- Price Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-dollar-sign"></i>
+                            السعر (دينار ليبي)
+                        </label>
+                        <input type="number" class="form-control" id="productPrice" required min="0" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-dollar-sign"></i>
+                            السعر الأصلي (اختياري)
+                        </label>
+                        <input type="number" class="form-control" id="productOriginalPrice" min="0" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-percent"></i>
+                            نسبة الخصم %
+                        </label>
+                        <input type="number" class="form-control" id="productDiscount" min="0" max="100" step="0.1" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- Category & Stock Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-list"></i>
+                            الفئة
+                        </label>
+                        <select class="form-control" id="productCategory" required>
+                            <option value="">اختر الفئة</option>
+                            <option value="electronics">إلكترونيات</option>
+                            <option value="tools">أدوات</option>
+                            <option value="clothes">ملابس</option>
+                            <option value="random">متنوعة</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-warehouse"></i>
+                            الكمية المحدودة (اختياري)
+                        </label>
+                        <input type="number" class="form-control" id="productLimitedQuantity" min="0" placeholder="اترك فارغاً إذا لم يكن محدود">
+                    </div>
+                </div>
+
+                <!-- Show in Pages -->
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-eye"></i>
+                        عرض في الصفحات
+                    </label>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <label class="checkbox-group">
+                            <input type="checkbox" name="showInPages" value="index" checked>
+                            الرئيسية
+                        </label>
+                        <label class="checkbox-group">
+                            <input type="checkbox" name="showInPages" value="products" checked>
+                            المنتجات
+                        </label>
+                        <label class="checkbox-group">
+                            <input type="checkbox" name="showInPages" value="electronics">
+                            الإلكترونيات
+                        </label>
+                        <label class="checkbox-group">
+                            <input type="checkbox" name="showInPages" value="tools">
+                            الأدوات
+                        </label>
+                        <label class="checkbox-group">
+                            <input type="checkbox" name="showInPages" value="clothes">
+                            الملابس
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Options Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="productInStock" checked>
+                            <i class="fas fa-check-circle"></i>
+                            متوفر في المخزون
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="productFeatured">
+                            <i class="fas fa-star"></i>
+                            منتج مميز
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-images"></i>
+                        صور المنتج
+                    </label>
+                    <div class="image-upload-zone" id="imageUploadZone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>اسحب الصور هنا أو انقر للاختيار</h3>
+                        <p>يمكنك رفع عدة صور (JPG, PNG, WebP)</p>
+                    </div>
+                    <input type="file" id="productImages" multiple accept="image/*">
+                    <div class="image-preview-container" id="imagePreviewContainer"></div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" style="flex: 1; min-width: 200px;">
+                        <i class="fas fa-plus-circle"></i>
+                        إضافة المنتج
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-lg" id="cancelEditBtn" onclick="resetForm()" style="display: none; min-width: 150px;">
+                        <i class="fas fa-times"></i>
+                        إلغاء التعديل
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tab Content: Manage Products -->
+        <div class="tab-content" id="manage-products">
+            <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-list" style="color: var(--primary-color);"></i>
+                إدارة المنتجات
+            </h2>
+
+            <div class="products-table-container">
+                <table class="products-table" id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>الصورة</th>
+                            <th>الاسم</th>
+                            <th>الفئة</th>
+                            <th>السعر</th>
+                            <th>الحالة</th>
+                            <th>مميز</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <!-- Products will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="admin-api-client.js"></script>
+</body>
+</html>

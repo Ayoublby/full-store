@@ -1,0 +1,37 @@
+[
+  {
+    "id": "product-1762373842876",
+    "name": "رائد الفضاء",
+    "description": "فن",
+    "price": 13,
+    "category": "electronics",
+    "inStock": true,
+    "featured": true,
+    "showInPages": [
+      "index",
+      "products"
+    ],
+    "images": [
+      "/images/uploaded/1762373842793-6pku5x.jpg"
+    ],
+    "addedDate": "2025-11-05T20:17:22.876Z",
+    "updatedDate": "2025-11-05T20:18:15.156Z"
+  },
+  {
+    "id": "product-1762373939621",
+    "name": "حلوى",
+    "description": "مم",
+    "price": 50,
+    "category": "random",
+    "inStock": true,
+    "featured": false,
+    "showInPages": [
+      "index",
+      "products"
+    ],
+    "images": [
+      "/images/uploaded/1762373939599-1toxwf.jpg"
+    ],
+    "addedDate": "2025-11-05T20:18:59.622Z"
+  }
+]
