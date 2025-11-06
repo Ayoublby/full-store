@@ -25,7 +25,6 @@ class EnhancedProductSystem {
 
     // تحميل المنتجات من ملف البيانات
     loadProducts() {
-        // تحميل المنتجات من ملف البيانات
         if (typeof storeProducts !== 'undefined') {
             this.products = [...storeProducts];
             this.displayProducts();
